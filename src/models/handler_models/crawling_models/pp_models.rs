@@ -4,7 +4,7 @@ use serde_derive::{Deserialize, Serialize};
 
 // request body
 #[derive(Deserialize)]
-pub struct PpKepcoRequestBody {
+pub struct PpAllPeriodsPaidRequestBody {
     pub userId: String,
     pub userPw: String,
     pub userNum: String,
@@ -12,7 +12,7 @@ pub struct PpKepcoRequestBody {
 
 // 파워 플레너 요금 데이터
 #[derive(Serialize, Debug)]
-pub struct PpKepcoData {
+pub struct PpAllPeriodsPaidData {
     pub claim_date: NaiveDate,
     pub usage: f64,
     pub paid: i64,
@@ -22,12 +22,12 @@ pub struct PpKepcoData {
 pub struct MetaResponseData {}
 
 #[derive(Serialize, Debug)]
-pub struct PpKepcoPaidDataResponse {
-    pub data: Vec<PpKepcoData>,
+pub struct PpAllPeriodsPaidDataResponse {
+    pub data: Vec<PpAllPeriodsPaidData>,
     pub meta: MetaResponseData,
 }
 
-impl IntoResponse for PpKepcoPaidDataResponse {
+impl IntoResponse for PpAllPeriodsPaidData {
     fn into_response(self) -> axum::response::Response {
         let body = Json(self);
         (StatusCode::OK, body).into_response()
