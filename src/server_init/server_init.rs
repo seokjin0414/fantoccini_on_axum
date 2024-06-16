@@ -64,7 +64,7 @@ pub async fn server_initializer(
         "/crawling/kepco/3year",
         post(get_3year_kepco_data_of_handler),
     ).route(
-        "/crawling/pp/3y",
+        "/crawling/pp/paid/all-periods",
         post(get_pp_all_periods_paid_data_handler),
     );
 

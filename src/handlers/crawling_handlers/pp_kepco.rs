@@ -29,12 +29,12 @@ pub async fn get_pp_all_periods_paid_data_handler(
     // driver path
     let chromedriver_path = "/opt/homebrew/bin/chromedriver";
     // let chromedriver_path = "src/handlers/handlers.crawling_handlers/driver/chromedriver";
-    let chrome_binary_path = "/usr/bin/google-chrome";
+    // let chrome_binary_path = "/usr/bin/google-chrome";
 
     // driver 실행
     let mut chromedriver_process = match Command::new(chromedriver_path)
         .arg("--port=4444")
-        // .arg(format!("--binary={}", chrome_binary_path))
+    // .arg(format!("--binary={}", chrome_binary_path))
         .spawn()
     {
         Ok(process) => process,
