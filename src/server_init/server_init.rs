@@ -3,6 +3,7 @@ use std::str::FromStr;
 use std::{env::var, net::SocketAddr};
 
 use crate::handlers::crawling_handlers::kepco::get_3year_kepco_data_of_handler;
+use crate::handlers::crawling_handlers::pp_kepco::get_pp_all_periods_paid_data_handler;
 use axum::extract::DefaultBodyLimit;
 use axum::http::{header, HeaderName};
 use axum::routing::post;
@@ -62,6 +63,9 @@ pub async fn server_initializer(
     let insensitives_router: axum::Router = axum::Router::new().route(
         "/crawling/kepco/3year",
         post(get_3year_kepco_data_of_handler),
+    ).route(
+        "/crawling/pp/3y",
+        post(get_pp_all_periods_paid_data_handler),
     );
 
     // 최종 라우터.

@@ -17,7 +17,7 @@ use crate::models::handler_models::crawling_models::pp_models::{
 };
 
 // 파워 플레너 모든기간 요금 조회 고객번호 기준
-pub async fn get_pp_kepco_paid_data_handler(
+pub async fn get_pp_all_periods_paid_data_handler(
     Json(params): Json<PpAllPeriodsPaidRequestBody>,
 ) -> impl IntoResponse {
     let url = "http://localhost:4444";
