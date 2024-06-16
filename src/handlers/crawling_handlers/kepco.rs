@@ -2,13 +2,13 @@ use anyhow::{Context, Result};
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::{Datelike, NaiveDate};
 use dashmap::DashMap;
+use fantoccini::error::CmdError;
 use fantoccini::{elements::Element, Client, ClientBuilder, Locator};
 use serde_json::{json, Map, Value};
 use std::{
     process::{Child, Command},
     sync::Arc,
 };
-use fantoccini::error::CmdError;
 use tokio::time::{timeout, Duration};
 
 use crate::models::handler_models::crawling_models::kepco_models::{KepcoData, KepcoRequestBody};
@@ -27,7 +27,10 @@ pub async fn get_3year_kepco_data_of_handler(
     let chrome_binary_path = "/usr/bin/google-chrome";
 
     // driver 실행
-    let mut chromedriver_process = match Command::new(chromedriver_path).arg("--port=4444").arg(format!("--binary={}", chrome_binary_path)).spawn()
+    let mut chromedriver_process = match Command::new(chromedriver_path)
+        .arg("--port=4444")
+        .arg(format!("--binary={}", chrome_binary_path))
+        .spawn()
     {
         Ok(process) => process,
         Err(e) => {
@@ -511,7 +514,7 @@ pub async fn get_3year_kepco_data_of_handler(
     // tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
 
     match client.delete_all_cookies().await {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -523,7 +526,7 @@ pub async fn get_3year_kepco_data_of_handler(
 
     // ChromeDriver 프로세스 종료
     match chromedriver_process.kill() {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -532,7 +535,6 @@ pub async fn get_3year_kepco_data_of_handler(
                 .into_response()
         }
     };
-
 
     (StatusCode::OK, Json(data_vec)).into_response()
 }

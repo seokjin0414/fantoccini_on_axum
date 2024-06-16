@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 mod handlers {
     pub mod crawling_handlers {
         pub mod kepco;
+        pub mod pp_kepco;
     }
 }
 
@@ -12,6 +13,7 @@ mod models {
     pub mod handler_models {
         pub mod crawling_models {
             pub mod kepco_models;
+            pub mod pp_kepco_models;
         }
     }
 }

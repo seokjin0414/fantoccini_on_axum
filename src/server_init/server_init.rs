@@ -2,11 +2,11 @@ use anyhow::{anyhow, Result};
 use std::str::FromStr;
 use std::{env::var, net::SocketAddr};
 
+use crate::handlers::crawling_handlers::kepco::get_3year_kepco_data_of_handler;
 use axum::extract::DefaultBodyLimit;
 use axum::http::{header, HeaderName};
 use axum::routing::post;
 use chrono::{DateTime, Utc};
-use crate::handlers::crawling_handlers::kepco::get_3year_kepco_data_of_handler;
 
 #[inline]
 pub async fn server_initializer(
@@ -63,7 +63,6 @@ pub async fn server_initializer(
         "/crawling/kepco/3year",
         post(get_3year_kepco_data_of_handler),
     );
-
 
     // 최종 라우터.
     // The final router.
