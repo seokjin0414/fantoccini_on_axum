@@ -20,7 +20,7 @@ use crate::models::handler_models::crawling_models::pp_models::{
 pub async fn get_pp_all_periods_paid_data_handler(
     Json(params): Json<PpAllPeriodsPaidRequestBody>,
 ) -> impl IntoResponse {
-    let url = "http://localhost:4444";
+    let url = "http://localhost:4445";
     let target_url = "https://pp.kepco.co.kr";
     let user_id = &params.userId;
     let user_pw = &params.userPw;
@@ -33,7 +33,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
 
     // driver 실행
     let mut chromedriver_process = match Command::new(chromedriver_path)
-        .arg("--port=4444")
+        .arg("--port=4445")
     // .arg(format!("--binary={}", chrome_binary_path))
         .spawn()
     {
