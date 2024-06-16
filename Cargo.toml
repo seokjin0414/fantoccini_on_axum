@@ -1,0 +1,54 @@
+[package]
+name = "crawling_on_axum"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+opt-level = 3
+codegen-units = 1
+debug = false
+incremental = false
+strip = true
+panic = "unwind"
+
+[dependencies]
+#web framework and request lib
+axum = { version = "0.7.5", default-features = false, features = [
+    "form",
+    "http1",
+    "json",
+    "matched-path",
+    "original-uri",
+    "query",
+    "tokio",
+    "tower-log",
+    "tracing",
+    "macros",
+    "ws",
+    "multipart",
+] } #is the web framework
+tokio = { version = "1.38.0", default-features = false, features = [
+    "macros",
+    "rt-multi-thread",
+] } #is the async framework that is the runtime for axum
+
+#serialziation/deserialization/file format handg
+serde = "1.0.203"
+serde_json = "1.0.117"
+serde_derive = "1.0.203"
+
+#time
+chrono = { version = "0.4.38", features = ["serde"] }
+
+#concurrency and async
+dashmap = { version = "5.5.3", features = ["inline"] }
+futures = "0.3.30"
+
+#env loading
+dotenvy = "0.15.7"
+
+#error handling
+anyhow = "1.0.86"
+
+#crawling
+fantoccini = "0.20.0-rc.7"
