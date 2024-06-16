@@ -11,7 +11,7 @@ mod handlers {
 mod models {
     pub mod handler_models {
         pub mod crawling_models {
-            pub mod kepco_mods;
+            pub mod kepco_models;
         }
     }
 }

@@ -10,6 +10,7 @@ pub struct KepcoRequestBody {
     pub userNum: String,
 }
 
+
 // 한전온 요금 데이터
 #[derive(Serialize, Debug)]
 pub struct KepcoData {
