@@ -352,6 +352,11 @@ pub async fn get_pp_all_periods_paid_data_handler(
     // 정렬
     data_vec.sort_by(|a, b| b.claim_date.cmp(&a.claim_date));
 
+    let response: PpAllPeriodsPaidDataResponse = PpAllPeriodsPaidDataResponse {
+        data: data_vec,
+        meta: MetaResponseData {},
+    };
+
     match client.delete_all_cookies().await {
         Ok(_) => {}
         Err(e) => {
@@ -375,7 +380,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
         }
     };
 
-    (StatusCode::OK, Json(data_vec)).into_response()
+    (StatusCode::OK, Json(response)).into_response()
 }
 
 // 요소 대기
