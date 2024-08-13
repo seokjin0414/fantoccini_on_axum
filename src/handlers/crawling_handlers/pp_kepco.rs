@@ -76,7 +76,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
             Ok(client) => break client,
             Err(e) => {
                 eprintln!("Retrying to connect to WebDriver: {}", e);
-                tokio::time::sleep(Duration::from_secs(1)).await;
+                tokio::time::sleep(Duration::from_millis(300)).await;
             }
         }
     };
@@ -348,6 +348,347 @@ pub async fn get_pp_all_periods_paid_data_handler(
     // 중복 제거
     let mut unique_dates = HashSet::new();
     data_vec.retain(|entry| unique_dates.insert(entry.claim_date));
+
+    // 정렬
+    data_vec.sort_by(|a, b| b.claim_date.cmp(&a.claim_date));
+
+    let response: PpAllPeriodsPaidDataResponse = PpAllPeriodsPaidDataResponse {
+        data: data_vec,
+        meta: MetaResponseData {},
+    };
+
+    match client.delete_all_cookies().await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed delete_all_cookies!: {:?}", e),
+            )
+                .into_response()
+        }
+    }
+
+    // ChromeDriver 프로세스 종료
+    match chromedriver_process.kill() {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed chromedriver_process.kill!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    (StatusCode::OK, Json(response)).into_response()
+}
+
+// latest 3 data
+pub async fn get_latest_3_pp_paid_data_handler(
+    Json(params): Json<PpAllPeriodsPaidRequestBody>,
+) -> impl IntoResponse {
+    let url = "http://localhost:4450";
+    let target_url = "https://pp.kepco.co.kr";
+    let user_id = &params.userId;
+    let user_pw = &params.userPw;
+    let user_number = &params.userNum;
+
+    // driver path
+    let chromedriver_path = "/opt/homebrew/bin/chromedriver";
+    // let chromedriver_path = "src/handlers/handlers.crawling_handlers/driver/chromedriver";
+    // let chrome_binary_path = "/usr/bin/google-chrome";
+
+    // driver 실행
+    let mut chromedriver_process = match Command::new(chromedriver_path)
+        .arg("--port=4450")
+        // .arg(format!("--binary={}", chrome_binary_path))
+        .spawn()
+    {
+        Ok(process) => process,
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Could not chromedriver_process!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // driver 대기
+    tokio::time::sleep(Duration::from_secs(2)).await;
+
+    // headless, disable-gpu option
+    let capabilities: Map<String, Value> = match serde_json::from_value(json!({
+        "goog:chromeOptions": {
+            // "binary": "/usr/bin/google-chrome",
+            "args": ["--headless", "--disable-gpu"]
+        }
+    })) {
+        Ok(result) => result,
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Could not acquire connection from pool!",
+            )
+                .into_response()
+        }
+    };
+
+    let client = loop {
+        match ClientBuilder::native()
+            .capabilities(capabilities.clone())
+            .connect(url)
+            .await
+        {
+            Ok(client) => break client,
+            Err(e) => {
+                eprintln!("Retrying to connect to WebDriver: {}", e);
+                tokio::time::sleep(Duration::from_millis(300)).await;
+            }
+        }
+    };
+
+    let client_arc = Arc::new(client.clone());
+
+    // view size
+    match client_arc.set_window_rect(0, 0, 774, 857).await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to set view size!: {:?}", e),
+            )
+                .into_response();
+        }
+    };
+    // 페이지 이동
+    match client_arc.goto(&format!("{}/intro.do", target_url)).await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to navigate goto!: {:?}", e),
+            )
+                .into_response();
+        }
+    };
+
+    // 공지 팝업 로드 대기
+    match wait_for_element(
+        &client_arc,
+        Locator::Id("notice_auto_popup"),
+        &mut chromedriver_process,
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to wait_for_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+    //공지 팝업 비활성화
+    match click_element(
+        &client_arc,
+        Locator::XPath("/html/body/div[2]/div[3]/label"),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {}
+    };
+
+    // id 입력 로드 대기
+    match wait_for_element(
+        &client_arc,
+        Locator::Id("RSA_USER_ID"),
+        &mut chromedriver_process,
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Failed to wait_for_element!",
+            )
+                .into_response()
+        }
+    };
+    // id 입력
+    match enter_value_in_element(&client_arc, Locator::Id("RSA_USER_ID"), user_id).await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to enter_value_in_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+    // pw 입력
+    match enter_value_in_element(&client_arc, Locator::Id("RSA_USER_PWD"), user_pw).await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to enter_value_in_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+    // 로그인 버튼 클릭
+    match click_element(
+        &client_arc,
+        Locator::XPath("/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]"),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to click_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // 로딩 대기
+    match wait_for_element_display_none(
+        &client_arc,
+        Locator::Id("backgroundLayer"),
+        &mut chromedriver_process,
+        Duration::from_secs(20),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to wait_for_element_display_none!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // user_num selector 클릭
+    match click_element(
+        &client_arc,
+        Locator::XPath("/html/body/div[1]/div[1]/div/div/a[2]"),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to click_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+    // user_num 클릭
+    match click_element(
+        &client_arc,
+        Locator::XPath(
+            format!(
+                "/html/body/div[1]/div[1]/div/div/ul/li[1]/a[text()='{}']",
+                user_number,
+            )
+                .as_str(),
+        ),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to click_element!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // 로딩 대기
+    match wait_for_element_display_none(
+        &client_arc,
+        Locator::Id("backgroundLayer"),
+        &mut chromedriver_process,
+        Duration::from_secs(20),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to wait_for_element_display_none!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // get 월별 청구 요금 url
+    let monthly_claim_href = get_href_by_locator(
+        &client_arc,
+        Locator::XPath("/html/body/div[1]/div[2]/div[1]/ul[4]/li[5]/a"),
+    )
+        .await
+        .unwrap_or_else(|| "".to_string());
+
+    let claim_url = format!("{}{}", target_url, monthly_claim_href);
+
+    // 월별 청구 요금 이동
+    match client_arc.goto(&claim_url).await {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed go to monthly_claim_href: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    // 로딩 대기
+    match wait_for_element_display_none(
+        &client_arc,
+        Locator::Id("backgroundLayer"),
+        &mut chromedriver_process,
+        Duration::from_secs(20),
+    )
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to wait_for_element_display_none!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
+
+    todo!();
+    // parse_data_from_table -> get latest 3 data
+
+    // data from table -> vec
+    let mut data_vec = match parse_data_from_table(&client_arc, "//*[@id='grid']/tbody").await {
+        Ok(vec) => vec,
+        Err(e) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Could not Parse data_from_table!: {:?}", e),
+            )
+                .into_response()
+        }
+    };
 
     // 정렬
     data_vec.sort_by(|a, b| b.claim_date.cmp(&a.claim_date));
