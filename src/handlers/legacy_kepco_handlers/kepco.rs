@@ -11,7 +11,7 @@ use std::{
 };
 use tokio::time::{timeout, Duration};
 
-use crate::models::handler_models::legacy_kepco::kepco_models::{KepcoData, KepcoRequestBody};
+use crate::models::handler_models::legacy_kepco_models::kepco_models::{KepcoData, KepcoRequestBody};
 
 // 한전 3년치 요금 조회 고객번호 기준
 pub async fn get_3year_kepco_data_of_handler(

@@ -11,7 +11,7 @@ use std::{
 };
 use tokio::time::{timeout, Duration};
 
-use crate::models::handler_models::legacy_kepco::pp_models::{
+use crate::models::handler_models::legacy_kepco_models::pp_models::{
     MetaResponseData, PpAllPeriodsPaidData, PpAllPeriodsPaidDataResponse,
     PpAllPeriodsPaidRequestBody,
 };

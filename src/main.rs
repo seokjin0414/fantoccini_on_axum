@@ -7,24 +7,33 @@ mod handlers {
         pub mod kepco;
         pub mod pp_kepco;
     }
+
+    pub mod power_planner_handlers {
+
+    }
 }
 
 mod models {
     pub mod common_response {
         pub mod common_response_models;
     }
+
     pub mod error_responses {
         pub mod errors;
         pub mod errors_def;
     }
 
     pub mod handler_models {
-        pub mod legacy_kepco {
+        pub mod legacy_kepco_models {
             pub mod kepco_models;
             pub mod pp_models;
         }
-        pub mod pp {}
+
+        pub mod power_planner_models {
+
+        }
     }
+
 }
 
 mod server_init {
