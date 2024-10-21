@@ -11,7 +11,7 @@ use std::{
 };
 use tokio::time::{timeout, Duration};
 
-use crate::models::handler_models::crawling_models::kepco_models::{KepcoData, KepcoRequestBody};
+use crate::models::handler_models::legacy_kepco::kepco_models::{KepcoData, KepcoRequestBody};
 
 // 한전 3년치 요금 조회 고객번호 기준
 pub async fn get_3year_kepco_data_of_handler(
@@ -23,7 +23,7 @@ pub async fn get_3year_kepco_data_of_handler(
     let user_number = &params.userNum;
 
     // driver path
-    let chromedriver_path = "src/handlers/handlers.crawling_handlers/driver/chromedriver";
+    let chromedriver_path = "src/driver/chromedriver";
     let chrome_binary_path = "/usr/bin/google-chrome";
 
     // driver 실행

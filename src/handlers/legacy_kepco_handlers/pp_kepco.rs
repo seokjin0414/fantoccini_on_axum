@@ -11,7 +11,7 @@ use std::{
 };
 use tokio::time::{timeout, Duration};
 
-use crate::models::handler_models::crawling_models::pp_models::{
+use crate::models::handler_models::legacy_kepco::pp_models::{
     MetaResponseData, PpAllPeriodsPaidData, PpAllPeriodsPaidDataResponse,
     PpAllPeriodsPaidRequestBody,
 };
@@ -28,7 +28,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
 
     // driver path
     let chromedriver_path = "/opt/homebrew/bin/chromedriver";
-    // let chromedriver_path = "src/handlers/handlers.crawling_handlers/driver/chromedriver";
+    // let chromedriver_path = "src/driver/chromedriver";
     // let chrome_binary_path = "/usr/bin/google-chrome";
 
     // driver 실행
@@ -395,7 +395,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
 
     // driver path
     let chromedriver_path = "/opt/homebrew/bin/chromedriver";
-    // let chromedriver_path = "src/handlers/handlers.crawling_handlers/driver/chromedriver";
+    // let chromedriver_path = "src/driver/chromedriver";
     // let chrome_binary_path = "/usr/bin/google-chrome";
 
     // driver 실행
