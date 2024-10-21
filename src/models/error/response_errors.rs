@@ -1,4 +1,4 @@
-use super::errors_def::ErrorResponseCode;
+use super::response_errors_def::ErrorResponseCode;
 use axum::http::StatusCode;
 
 impl ErrorResponseCode {

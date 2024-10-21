@@ -11,14 +11,16 @@ use std::{
 };
 use tokio::time::{timeout, Duration};
 
-use crate::models::handler_models::legacy_kepco_models::pp_models::{
-    MetaResponseData, PpAllPeriodsPaidData, PpAllPeriodsPaidDataResponse,
-    PpAllPeriodsPaidRequestBody,
+use crate::models::handler::{
+    legacy_kepco::pp_models::{
+        MetaResponseData, PpAllPeriodsPaidData, PpAllPeriodsPaidDataResponse,
+    },
+    pp::commons::PpRequestBody
 };
 
 // 파워 플레너 모든기간 요금 조회 고객번호 기준
 pub async fn get_pp_all_periods_paid_data_handler(
-    Json(params): Json<PpAllPeriodsPaidRequestBody>,
+    Json(params): Json<PpRequestBody>,
 ) -> impl IntoResponse {
     let url = "http://localhost:4445";
     let target_url = "https://pp.kepco.co.kr";
@@ -385,7 +387,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
 
 // latest 3 data
 pub async fn get_latest_3_pp_paid_data_handler(
-    Json(params): Json<PpAllPeriodsPaidRequestBody>,
+    Json(params): Json<PpRequestBody>,
 ) -> impl IntoResponse {
     let url = "http://localhost:4450";
     let target_url = "https://pp.kepco.co.kr";

@@ -3,35 +3,35 @@
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 mod handlers {
-    pub mod legacy_kepco_handlers {
+    pub mod legacy_kepco {
         pub mod kepco;
         pub mod pp_kepco;
     }
 
-    pub mod power_planner_handlers {
+    pub mod pp {
 
     }
 }
 
 mod models {
-    pub mod common_response {
-        pub mod common_response_models;
+    pub mod response {
+        pub mod commons;
     }
 
-    pub mod error_responses {
-        pub mod errors;
-        pub mod errors_def;
+    pub mod error {
+        pub mod response_errors;
+        pub mod response_errors_def;
     }
 
-    pub mod handler_models {
-        pub mod legacy_kepco_models {
+    pub mod handler {
+        pub mod legacy_kepco {
             pub mod kepco_models;
             pub mod pp_models;
         }
 
-        pub mod pp_models {
-            pub mod common_pp_model;
-            pub mod user_info_model;
+        pub mod pp {
+            pub mod commons;
+            pub mod user_info;
         }
     }
 

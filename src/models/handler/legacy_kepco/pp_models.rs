@@ -2,14 +2,6 @@ use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::NaiveDate;
 use serde_derive::{Deserialize, Serialize};
 
-// request body
-#[derive(Deserialize)]
-pub struct PpAllPeriodsPaidRequestBody {
-    pub userId: String,
-    pub userPw: String,
-    pub userNum: String,
-}
-
 // 파워 플레너 요금 데이터
 #[derive(Serialize, Debug)]
 pub struct PpAllPeriodsPaidData {

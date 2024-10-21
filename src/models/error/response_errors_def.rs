@@ -8,7 +8,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use serde_json::json;
 
-pub const ERRORS_SOURCE_CODE: &str = include_str!("errors.rs");
+pub const ERRORS_SOURCE_CODE: &str = include_str!("response_errors.rs");
 
 #[derive(Clone)]
 pub struct ErrorResponseCode {

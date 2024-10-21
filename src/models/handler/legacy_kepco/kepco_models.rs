@@ -1,14 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::NaiveDate;
-use serde_derive::{Deserialize, Serialize};
-
-// request body
-#[derive(Deserialize)]
-pub struct KepcoRequestBody {
-    pub userId: String,
-    pub userPw: String,
-    pub userNum: String,
-}
+use serde_derive::{Serialize};
 
 // 한전온 요금 데이터
 #[derive(Serialize, Debug)]
