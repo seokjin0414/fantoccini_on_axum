@@ -10,6 +10,14 @@ mod handlers {
 }
 
 mod models {
+    pub mod common_response {
+        pub mod common_response_models;
+    }
+    pub mod error_responses {
+        pub mod errors;
+        pub mod errors_def;
+    }
+
     pub mod handler_models {
         pub mod crawling_models {
             pub mod kepco_models;
