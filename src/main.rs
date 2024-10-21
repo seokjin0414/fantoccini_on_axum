@@ -29,8 +29,9 @@ mod models {
             pub mod pp_models;
         }
 
-        pub mod power_planner_models {
-
+        pub mod pp_models {
+            pub mod common_pp_model;
+            pub mod user_info_model;
         }
     }
 

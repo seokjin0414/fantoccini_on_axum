@@ -13,7 +13,7 @@ panic = "unwind"
 
 [dependencies]
 #web framework and request lib
-axum = { version = "0.7.5", default-features = false, features = [
+axum = { version = "0.7.7", default-features = false, features = [
     "form",
     "http1",
     "json",
@@ -27,28 +27,28 @@ axum = { version = "0.7.5", default-features = false, features = [
     "ws",
     "multipart",
 ] } #is the web framework
-tokio = { version = "1.38.0", default-features = false, features = [
+tokio = { version = "1.40.0", default-features = false, features = [
     "macros",
     "rt-multi-thread",
 ] } #is the async framework that is the runtime for axum
 
 #serialziation/deserialization/file format handg
-serde = "1.0.203"
-serde_json = "1.0.117"
-serde_derive = "1.0.203"
+serde = "1.0.210"
+serde_json = "1.0.132"
+serde_derive = "1.0.210"
 
 #time
 chrono = { version = "0.4.38", features = ["serde"] }
 
 #concurrency and async
-dashmap = { version = "5.5.3", features = ["inline"] }
-futures = "0.3.30"
+dashmap = { version = "6.1.0", features = ["inline"] }
+futures = "0.3.31"
 
 #env loading
 dotenvy = "0.15.7"
 
 #error handling
-anyhow = "1.0.86"
+anyhow = "1.0.90"
 
 #crawling
-fantoccini = "0.20.0-rc.7"
+fantoccini = "0.21.2"
