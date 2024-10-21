@@ -65,9 +65,9 @@ pub async fn server_initializer(
     // 인증 필요 없는 자료용. x-api-key로 대부분 접근은 걸러져서 민감하지 않은 정보 표출할 때 사용. 또는 테스트용.
     // For insensitive information that only requires x-api-key filtering. Or for testing.
     let insensitives_router: axum::Router = axum::Router::new()
-        .route("/crawling/legacy_kepco/3year", post(get_3year_kepco_data_of_handler))
-        .route("/crawling/pp/paid/all-periods", post(get_pp_all_periods_paid_data_handler))
-        .route("/crawling/pp/paid/latest-3-data", post(get_latest_3_pp_paid_data_handler))
+        .route("/crawling/legacy_kepco_models/3year", post(get_3year_kepco_data_of_handler))
+        .route("/crawling/power_planner_models/paid/all-periods", post(get_pp_all_periods_paid_data_handler))
+        .route("/crawling/power_planner_models/paid/latest-3-data", post(get_latest_3_pp_paid_data_handler))
         ;
 
     // 최종 라우터.
