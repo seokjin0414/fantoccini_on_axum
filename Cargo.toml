@@ -1,6 +1,6 @@
 [package]
 name = "crawling_on_axum"
-version = "0.1.0"
+version = "0.0.40"
 edition = "2021"
 
 [profile.release]
@@ -27,15 +27,16 @@ axum = { version = "0.7.7", default-features = false, features = [
     "ws",
     "multipart",
 ] } #is the web framework
-tokio = { version = "1.40.0", default-features = false, features = [
+tokio = { version = "1.41.0", default-features = false, features = [
     "macros",
     "rt-multi-thread",
+    "process",
 ] } #is the async framework that is the runtime for axum
 
 #serialziation/deserialization/file format handg
-serde = "1.0.210"
+serde = "1.0.211"
 serde_json = "1.0.132"
-serde_derive = "1.0.210"
+serde_derive = "1.0.211"
 
 #time
 chrono = { version = "0.4.38", features = ["serde"] }
