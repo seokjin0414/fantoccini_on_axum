@@ -78,7 +78,6 @@ impl ErrorResponseCode {
         message: "User does not have the necessary authority.",
         status_code: StatusCode::FORBIDDEN,
     };
-
     pub const QUERY_PREPARATION_FAILED: ErrorResponseCode = ErrorResponseCode {
         code: 4015,
         message: "Failed to prepare statement.",
@@ -89,4 +88,11 @@ impl ErrorResponseCode {
         message: "Path unavailable!",
         status_code: StatusCode::NOT_FOUND,
     };
+    pub const CREATE_CLIENT: ErrorResponseCode = ErrorResponseCode {
+        code: 5001,
+        message: "Could not create_client!",
+        status_code: StatusCode::INTERNAL_SERVER_ERROR,
+    };
+
+
 }
