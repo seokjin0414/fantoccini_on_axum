@@ -44,10 +44,12 @@ pub async fn shutdown_chromedriver(chromedriver_process: Arc<Mutex<Child>>) {
 pub fn create_capabilities(test: bool) -> Result<Capabilities> {
     let mut capabilities = Capabilities::new();
     let chrome_options = serde_json::to_value(ChromeOptions::new(test)?)
-        .map_err(|e| anyhow!("Failed to serialize ChromeOptions: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to connect process: {:?}", e);
+            anyhow!("Failed to serialize ChromeOptions: {:?}", e)
+        })?;
 
     capabilities.insert("goog:chromeOptions".to_string(), chrome_options);
-    println!("create_capabilities successfully");
     Ok(capabilities)
 }
 
@@ -61,20 +63,25 @@ pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
             anyhow!("Failed to connect process: {:?}", e)
         })?;
 
-    println!("create_client successfully");
     Ok(Arc::new(client))
 }
 
 pub async fn go_to_url(client: &Client, url: &str) -> Result<()> {
     client.goto(url).await
-        .map_err(|e| anyhow!("Failed to client goto URL({})\n {:?}", url, e))?;
+        .map_err(|e| {
+            eprintln!("Failed to client goto URL({})\n {:?}", url, e);
+            anyhow!("Failed to client goto URL({})\n {:?}", url, e)
+        })?;
 
     Ok(())
 }
 
 pub async fn find_element(client: &Client, locator: Locator<'_>) -> Result<Element> {
     let element= client.find(locator).await
-        .map_err(|e| anyhow!("Failed to find element: {:?}\n {:?}", locator, e))?;
+        .map_err(|e| {
+            eprintln!("Failed to find element: {:?}\n {:?}", locator, e);
+            anyhow!("Failed to find element: {:?}\n {:?}", locator, e)
+        })?;
 
     Ok(element)
 }
@@ -82,7 +89,10 @@ pub async fn find_element(client: &Client, locator: Locator<'_>) -> Result<Eleme
 pub async fn wait_element(client: &Client, locator: Locator<'_>) -> Result<Element> {
     let element = client.wait().for_element(locator)
         .await
-        .map_err(|e| anyhow!("Failed to wait element: {:?}\n {}", locator, e))?;
+        .map_err(|e| {
+            eprintln!("Failed to wait element: {:?}\n {}", locator, e);
+            anyhow!("Failed to wait element: {:?}\n {}", locator, e)
+        })?;
 
     Ok(element)
 }
@@ -91,9 +101,11 @@ pub async fn click_element(client: &Client, locator: Locator<'_>) -> Result<()> 
     let element= find_element(client, locator).await?;
 
     element.click().await
-        .map_err(|e| anyhow!("Failed to click the element: {:?}\n {:?}", locator, e))?;
+        .map_err(|e| {
+            eprintln!("Failed to click the element: {:?}\n {:?}", locator, e);
+            anyhow!("Failed to click the element: {:?}\n {:?}", locator, e)
+        })?;
 
-    println!("Clicked successfully: {:?}", locator);
     Ok(())
 }
 
@@ -101,9 +113,11 @@ pub async fn enter_value_in_element(client: &Client, locator: Locator<'_>, text:
     let element= find_element(client, locator).await?;
 
     element.send_keys(text).await
-       .map_err(|e| anyhow!("Failed to send keys to element: {:?}\n {:?}", locator, e))?;
+       .map_err(|e| {
+           eprintln!("Failed to send keys to element: {:?}\n {:?}", locator, e);
+           anyhow!("Failed to send keys to element: {:?}\n {:?}", locator, e)
+       })?;
 
-    println!("Entered value successfully: {:?}", locator);
     Ok(())
 }
 
@@ -112,7 +126,10 @@ pub async fn attr_element(client: &Client, locator: Locator<'_>, attr: &str) -> 
 
     let attr = element.attr(attr)
         .await
-        .map_err(|e| anyhow!("Failed to get attr from element: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to get attr from element: {:?}", e);
+            anyhow!("Failed to get attr from element: {:?}", e)
+        })?;
 
     Ok(attr)
 }
@@ -122,7 +139,10 @@ pub async fn text_element(client: &Client, locator: Locator<'_>) -> Result<Strin
 
     let text = element.text()
         .await
-        .map_err(|e| anyhow!("Failed to get text from element: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to get text from element: {:?}", e);
+            anyhow!("Failed to get text from element: {:?}", e)
+        })?;
 
     Ok(text)
 }
@@ -141,19 +161,18 @@ pub async fn wait_for_element_display_none(
                     println!("Element is hidden (style=\"display: none\")");
                     break;
                 }
-                Ok(_) => {
+                _ => {
                     println!("Element is not hidden, retrying...");
-                    continue;
-                }
-                Err(e) => {
-                    anyhow!("Failed to get style attribute: {}", e);
+                    tokio::time::sleep(Duration::from_millis(30)).await;
                 }
             }
-            tokio::time::sleep(Duration::from_millis(500)).await;
         }
     })
         .await
-        .map_err(|e| anyhow!("Failed to wait the element within the given duration: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to wait the element within the given duration: {:?}", e);
+            anyhow!("Failed to wait the element within the given duration: {:?}", e)
+        })?;
 
     Ok(())
 }
