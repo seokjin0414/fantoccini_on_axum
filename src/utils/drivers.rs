@@ -18,7 +18,10 @@ pub async fn start_chromedriver() -> Result<Child> {
         .arg("--port=4450")
         .kill_on_drop(true)
         .spawn()
-        .map_err(|e| anyhow!("Failed to start ChromeDriver: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to start ChromeDriver: {:?}", e);
+            anyhow!("Failed to start ChromeDriver: {:?}", e)
+        })?;
 
     println!("ChromeDriver started on port 4450");
     Ok(chromedriver_process)
@@ -40,10 +43,11 @@ pub async fn shutdown_chromedriver(chromedriver_process: Arc<Mutex<Child>>) {
 
 pub fn create_capabilities(test: bool) -> Result<Capabilities> {
     let mut capabilities = Capabilities::new();
-    let chrome_options = serde_json::to_value(ChromeOptions::new(test))
+    let chrome_options = serde_json::to_value(ChromeOptions::new(test)?)
         .map_err(|e| anyhow!("Failed to serialize ChromeOptions: {:?}", e))?;
 
     capabilities.insert("goog:chromeOptions".to_string(), chrome_options);
+    println!("create_capabilities successfully");
     Ok(capabilities)
 }
 
@@ -52,8 +56,12 @@ pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
         .capabilities(create_capabilities(test)?)
         .connect(url)
         .await
-        .map_err(|e| anyhow!("Failed to connect process: {:?}", e))?;
+        .map_err(|e| {
+            eprintln!("Failed to connect process: {:?}", e);
+            anyhow!("Failed to connect process: {:?}", e)
+        })?;
 
+    println!("create_client successfully");
     Ok(Arc::new(client))
 }
 
@@ -97,6 +105,26 @@ pub async fn enter_value_in_element(client: &Client, locator: Locator<'_>, text:
 
     println!("Entered value successfully: {:?}", locator);
     Ok(())
+}
+
+pub async fn attr_element(client: &Client, locator: Locator<'_>, attr: &str) -> Result<Option<String>> {
+    let element = find_element(client, locator).await?;
+
+    let attr = element.attr(attr)
+        .await
+        .map_err(|e| anyhow!("Failed to get attr from element: {:?}", e))?;
+
+    Ok(attr)
+}
+
+pub async fn text_element(client: &Client, locator: Locator<'_>) -> Result<String> {
+    let element = find_element(client, locator).await?;
+
+    let text = element.text()
+        .await
+        .map_err(|e| anyhow!("Failed to get text from element: {:?}", e))?;
+
+    Ok(text)
 }
 
 pub async fn wait_for_element_display_none(

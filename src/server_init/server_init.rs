@@ -73,7 +73,7 @@ pub async fn server_initializer(
         .route("/crawling/legacy_kepco/3year", post(get_3year_kepco_data_of_handler))
         .route("/crawling/pp/paid/all-periods", post(get_pp_all_periods_paid_data_handler))
         .route("/crawling/pp/paid/latest-3-data", post(get_latest_3_pp_paid_data_handler))
-        .route("/crawling/pp/user-info/", post(get_user_info_handler))
+        .route("/crawling/pp/user-info", post(get_user_info_handler))
         ;
 
     // 최종 라우터.

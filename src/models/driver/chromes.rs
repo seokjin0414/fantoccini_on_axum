@@ -1,6 +1,8 @@
+use anyhow::{anyhow, Result};
 use serde_derive::{Deserialize, Serialize};
 
-const BINARY_PATH: &str = "/usr/bin/chrome";
+const BINARY_PATH: &str = "CHROME_BINARY_PATH";
+const BINARY_PATH_TEST: &str = "CHROME_BINARY_PATH_TEST";
 const HEADLESS: &str = "--headless";
 const DISABLE_GPU: &str = "--disable-gpu";
 const DISABLE_TRANSLATE: &str = "--disable-translate";
@@ -30,25 +32,25 @@ pub const LOCAL_URL: &str = "http://localhost:4450";
 
 #[derive(Serialize)]
 pub struct ChromeOptions {
-    binary: Option<String>,
+    binary: String,
     args: Vec<String>,
 }
 
 impl ChromeOptions {
-    fn with_binary(binary: Option<String>) -> Self {
+    fn with_binary(binary: String) -> Self {
         ChromeOptions {
             binary,
             args: COMMON_ARGS.iter().map(|&s| s.to_string()).collect(),
         }
     }
 
-    pub fn new(test: bool) -> Self {
-        let binary_path = if test {
-            None
-        } else {
-            Some(BINARY_PATH.to_string())
-        };
+    pub fn new(test: bool) -> Result<Self> {
+        let mut key = BINARY_PATH_TEST;
+        if test { key = BINARY_PATH }
 
-        Self::with_binary(binary_path)
+        let binary_path = std::env::var(key)
+            .map_err(|e| anyhow!("Failed to get ENV BINARY_PATH: {}", e))?;
+
+        Ok(Self::with_binary(binary_path))
     }
 }
