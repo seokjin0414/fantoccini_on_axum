@@ -13,6 +13,7 @@ mod handlers {
     }
 
     pub mod pp {
+        pub mod commons;
         pub mod user_info;
     }
 }

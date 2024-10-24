@@ -2,11 +2,16 @@ use anyhow::{anyhow, Result};
 use std::str::FromStr;
 use std::{env::var, net::SocketAddr};
 
-use crate::handlers::legacy_kepco::{
-    kepco::get_3year_kepco_data_of_handler,
-    pp_kepco::{
-        get_latest_3_pp_paid_data_handler, get_pp_all_periods_paid_data_handler
+use crate::handlers::{
+    legacy_kepco::{
+        kepco::get_3year_kepco_data_of_handler,
+        pp_kepco::{
+            get_latest_3_pp_paid_data_handler, get_pp_all_periods_paid_data_handler
+        },
     },
+    pp::{
+        user_info::get_user_info_handler,
+    }
 };
 use axum::extract::DefaultBodyLimit;
 use axum::http::{header, HeaderName};
@@ -68,6 +73,7 @@ pub async fn server_initializer(
         .route("/crawling/legacy_kepco/3year", post(get_3year_kepco_data_of_handler))
         .route("/crawling/pp/paid/all-periods", post(get_pp_all_periods_paid_data_handler))
         .route("/crawling/pp/paid/latest-3-data", post(get_latest_3_pp_paid_data_handler))
+        .route("/crawling/pp/user-info/", post(get_user_info_handler))
         ;
 
     // 최종 라우터.

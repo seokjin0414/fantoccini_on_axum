@@ -1,7 +1,7 @@
 use tokio::process::{Command, Child};
 use std::sync::Arc;
 use std::time::Duration;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Result};
 use fantoccini::{Client, ClientBuilder, Locator};
 use fantoccini::elements::Element;
 use fantoccini::wd::Capabilities;
@@ -58,7 +58,7 @@ pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
 }
 
 pub async fn go_to_url(client: &Client, url: &str) -> Result<()> {
-    client.goto(&format!("{}", url)).await
+    client.goto(url).await
         .map_err(|e| anyhow!("Failed to client goto URL({})\n {:?}", url, e))?;
 
     Ok(())
@@ -85,7 +85,7 @@ pub async fn click_element(client: &Client, locator: Locator<'_>) -> Result<()> 
     element.click().await
         .map_err(|e| anyhow!("Failed to click the element: {:?}\n {:?}", locator, e))?;
 
-    println!("clicked successfully: {:?}", locator);
+    println!("Clicked successfully: {:?}", locator);
     Ok(())
 }
 
@@ -93,9 +93,9 @@ pub async fn enter_value_in_element(client: &Client, locator: Locator<'_>, text:
     let element= find_element(client, locator).await?;
 
     element.send_keys(text).await
-       .map_err(|e| anyhow!("Failed to send keys: {:?}\n {:?}", locator, e))?;
+       .map_err(|e| anyhow!("Failed to send keys to element: {:?}\n {:?}", locator, e))?;
 
-    println!("entered successfully: {:?}", locator);
+    println!("Entered value successfully: {:?}", locator);
     Ok(())
 }
 
@@ -114,7 +114,8 @@ pub async fn wait_for_element_display_none(
                     break;
                 }
                 Ok(_) => {
-                    anyhow!("Element is not hidden, retrying...");
+                    println!("Element is not hidden, retrying...");
+                    continue;
                 }
                 Err(e) => {
                     anyhow!("Failed to get style attribute: {}", e);

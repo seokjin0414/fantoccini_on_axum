@@ -18,7 +18,7 @@ use crate::{
     },
 };
 
-pub async fn get_pp_all_periods_paid_data_handler(
+pub async fn get_user_info_handler(
     Json(params): Json<PpRequestBody>,
 ) -> Result<impl IntoResponse, ErrorResponseCode >{
 
@@ -32,8 +32,6 @@ pub async fn get_pp_all_periods_paid_data_handler(
         ErrorResponseCode::CREATE_CLIENT
     })?;
 
-
-
     client.delete_all_cookies().await.map_err(|e| {
         eprintln!("Failed to delete client cookies: {:?}", e);
         ErrorResponseCode::CREATE_CLIENT
@@ -41,3 +39,5 @@ pub async fn get_pp_all_periods_paid_data_handler(
 
     Ok(())
 }
+
+
