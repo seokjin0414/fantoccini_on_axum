@@ -4,6 +4,7 @@ use axum::{
     Json,
 };
 use fantoccini::{Client, Locator};
+use regex::Regex;
 use crate::{
     models::{
         handler::pp::{
@@ -49,9 +50,7 @@ pub async fn get_user_info_handler(
 }
 
 async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
-    // 페이지 이동
     go_to_url(client, USER_INFO_URL).await?;
-
     wait_element(&client, Locator::Css("#table2")).await?;
 
     let user_number = text_element(
@@ -64,7 +63,7 @@ async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
         Locator::Css("#contents > div.table_info > table > tbody > tr:nth-child(2) > td:nth-child(2)"),
     ).await?;
 
-    let contract_power = text_element(
+    let mut contract_power = text_element(
         &client,
         Locator::Css("#contents > div.table_info > table > tbody > tr:nth-child(2) > td:nth-child(4)"),
     ).await?;
@@ -84,9 +83,21 @@ async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
     Ok(UserInfo {
         user_number,
         contract_type,
-        contract_power,
-        inspection_day,
+        contract_power: contract_power.replace("kw", ""),
+        inspection_day: parse_day(&inspection_day)?,
         instrument_number,
     })
 }
 
+fn parse_day(input: &str) -> Result<i16> {
+    let re = Regex::new(r"\d+").map_err(|e| anyhow!("Invalid regex: {:?}", e))?;
+
+    if let Some(mat) = re.find(input) {
+        let day_str = mat.as_str();
+        let day = day_str.parse::<i16>()
+            .map_err(|e| anyhow!("Failed to parse day '{}': {:?}", day_str, e))?;
+        return Ok(day);
+    }
+
+    Ok(0)
+}

@@ -5,6 +5,6 @@ pub struct UserInfo {
     pub user_number: String,
     pub contract_type: String,
     pub contract_power: String,
-    pub inspection_day: String,
+    pub inspection_day: i16,
     pub instrument_number: String,
 }

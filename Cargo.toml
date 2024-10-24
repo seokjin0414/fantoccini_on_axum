@@ -34,9 +34,9 @@ tokio = { version = "1.41.0", default-features = false, features = [
 ] } #is the async framework that is the runtime for axum
 
 #serialziation/deserialization/file format handg
-serde = "1.0.211"
+serde = "1.0.213"
 serde_json = "1.0.132"
-serde_derive = "1.0.211"
+serde_derive = "1.0.213"
 
 #time
 chrono = { version = "0.4.38", features = ["serde"] }
@@ -49,7 +49,9 @@ futures = "0.3.31"
 dotenvy = "0.15.7"
 
 #error handling
-anyhow = "1.0.90"
+anyhow = "1.0.91"
 
 #crawling
 fantoccini = "0.21.2"
+
+regex = "1.11.1"
