@@ -9,6 +9,7 @@ use futures::TryFutureExt;
 use tokio::sync::Mutex;
 use tokio::time::timeout;
 use crate::models::driver::chromes::ChromeOptions;
+use crate::models::error::response_errors_def::ErrorResponseCode;
 
 pub async fn start_chromedriver() -> Result<Child> {
     let path = std::env::var("CHROME_DRIVER_PATH")
@@ -172,6 +173,17 @@ pub async fn wait_for_element_display_none(
         .map_err(|e| {
             eprintln!("Failed to wait the element within the given duration: {:?}", e);
             anyhow!("Failed to wait the element within the given duration: {:?}", e)
+        })?;
+
+    Ok(())
+}
+
+pub async fn clean_client(client: &Client) -> Result<()> {
+    client.delete_all_cookies()
+        .await
+        .map_err(|e| {
+            eprintln!("Failed to delete client cookies: {:?}", e);
+            anyhow!("Failed to delete client cookies: {:?}", e)
         })?;
 
     Ok(())

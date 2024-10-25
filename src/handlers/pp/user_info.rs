@@ -11,7 +11,10 @@ use crate::{
             commons::{
                 USER_INFO_URL, PpRequestBody,
             },
-            user_info::UserInfo,
+            user_info::{
+                CONTRACT_TYPE, PURPOSE, CONTRACT_TYPE_ID, PURPOSE_ID,
+                purpose_vec, contract_vec, UserInfo,
+            },
         },
         error::response_errors_def::ErrorResponseCode,
         driver::chromes::LOCAL_URL,
@@ -28,23 +31,16 @@ pub async fn get_user_info_handler(
 
     let client = create_client(LOCAL_URL, PpRequestBody::test_state(&params))
         .await
-        .map_err(|e| {
-            ErrorResponseCode::CREATE_CLIENT
-        })?;
+        .map_err(|e| ErrorResponseCode::CREATE_CLIENT)?;
 
-    pp_login(&client, params).await.map_err(|e| {
-        ErrorResponseCode::PP_LOGIN
-    })?;
+    pp_login(&client, params).await
+        .map_err(|e| ErrorResponseCode::PP_LOGIN)?;
 
-    let user_info = pp_user_info(&client).await.map_err(|e| {
-        ErrorResponseCode::PP_USER_INFO
-    })?;
+    let user_info = pp_user_info(&client).await
+        .map_err(|e| ErrorResponseCode::PP_USER_INFO)?;
 
-    println!("@@@@@@@@@@@@@@@@@@@@@@@@@ TEST @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    client.delete_all_cookies().await.map_err(|e| {
-        eprintln!("Failed to delete client cookies: {:?}", e);
-        ErrorResponseCode::CREATE_CLIENT
-    })?;
+    clean_client(&client).await
+        .map_err(|e| ErrorResponseCode::CLEAN_CLIENT)?;
 
     Ok(basic_response(user_info, start.elapsed()))
 }
@@ -58,12 +54,12 @@ async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
         Locator::Css("#contents > div.table_info > table > tbody > tr:nth-child(1) > td:nth-child(2)"),
     ).await?;
 
-    let contract_type = text_element(
+    let contract = text_element(
         &client,
         Locator::Css("#contents > div.table_info > table > tbody > tr:nth-child(2) > td:nth-child(2)"),
     ).await?;
 
-    let mut contract_power = text_element(
+    let contract_power = text_element(
         &client,
         Locator::Css("#contents > div.table_info > table > tbody > tr:nth-child(2) > td:nth-child(4)"),
     ).await?;
@@ -80,10 +76,12 @@ async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
         Locator::Css("#table3 > tbody > tr:nth-child(1) > td:nth-child(2)"),
     ).await?;
 
+    println!("pp_user_info successfully");
     Ok(UserInfo {
         user_number,
-        contract_type,
-        contract_power: contract_power.replace("kw", ""),
+        contract_type_id: extract_id(&contract, CONTRACT_TYPE)?,
+        purpose_id: extract_id(&contract, PURPOSE)?,
+        contract_power: parse_day(&contract_power)? as f64,
         inspection_day: parse_day(&inspection_day)?,
         instrument_number,
     })
@@ -101,3 +99,22 @@ fn parse_day(input: &str) -> Result<i16> {
 
     Ok(0)
 }
+
+fn extract_id(input: &str, kind: &str) -> Result<i16> {
+    let (set, default) = match kind {
+        CONTRACT_TYPE => (contract_vec(), CONTRACT_TYPE_ID),
+        PURPOSE_TYPE => (purpose_vec(), PURPOSE_ID),
+        _ => {
+            return Err(anyhow!("Failed to extract_id: {:?} ({:?}) ", kind, input))
+        }
+    };
+
+    for (pattern, id) in set {
+        if input.contains(pattern) {
+            return Ok(id)
+        }
+    }
+
+    Ok(default)
+}
+

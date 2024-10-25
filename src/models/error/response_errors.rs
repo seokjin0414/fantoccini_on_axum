@@ -103,6 +103,9 @@ impl ErrorResponseCode {
         message: "Could not pp_user_info!",
         status_code: StatusCode::INTERNAL_SERVER_ERROR,
     };
-
-
+    pub const CLEAN_CLIENT: ErrorResponseCode = ErrorResponseCode {
+        code: 5003,
+        message: "Could not clean_client!",
+        status_code: StatusCode::INTERNAL_SERVER_ERROR,
+    };
 }
