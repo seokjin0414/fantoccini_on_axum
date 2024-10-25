@@ -1,10 +1,8 @@
 #![allow(non_snake_case)]
 
-use std::sync::Arc;
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, Utc};
 use dotenvy::dotenv;
-use tokio::sync::Mutex;
 
 mod handlers {
     pub mod legacy_kepco {
