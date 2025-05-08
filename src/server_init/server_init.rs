@@ -14,7 +14,6 @@ use crate::handlers::{
     }
 };
 use axum::extract::DefaultBodyLimit;
-use axum::http::{header, HeaderName};
 use axum::routing::post;
 use chrono::{DateTime, Utc};
 
@@ -30,32 +29,6 @@ pub async fn server_initializer(
         Err(e) => {
             return Err(anyhow!("Could not find var APP_NAME_VERSION: {:?}", e));
         }
-    };
-    let db_conn_url: String = match var("DB_CONN_URL") {
-        Ok(var) => var,
-        Err(e) => {
-            return Err(anyhow!("Could not find var DB_CONN_URL: {:?}", e));
-        }
-    };
-    let smtp_username: String = match var("SMTP_USERNAME") {
-        Ok(var) => var,
-        Err(e) => {
-            return Err(anyhow!("Could not find var SMTP_USERNAME: {:?}", e));
-        }
-    };
-    let smtp_password: String = match var("SMTP_PASSWORD") {
-        Ok(var) => var,
-        Err(e) => {
-            return Err(anyhow!("Could not find var SMTP_PASSWORD: {:?}", e));
-        }
-    };
-    let timezone: String = match var("TIMEZONE") {
-        Ok(var) => var,
-        Err(e) => return Err(anyhow!("Could not find var TIMEZONE: {:?}", e)),
-    };
-    let bucket_name: String = match var("BUCKET_NAME") {
-        Ok(var) => var,
-        Err(e) => return Err(anyhow!("Could not find var BUCKET_NAME: {:?}", e)),
     };
 
     // 호스팅할 IP를 여기서 %str로 파싱하거나 환경변수에서 로딩할 것.

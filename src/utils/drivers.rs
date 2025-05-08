@@ -5,11 +5,9 @@ use anyhow::{anyhow, Result};
 use fantoccini::{Client, ClientBuilder, Locator};
 use fantoccini::elements::Element;
 use fantoccini::wd::Capabilities;
-use futures::TryFutureExt;
 use tokio::sync::Mutex;
 use tokio::time::timeout;
 use crate::models::driver::chromes::ChromeOptions;
-use crate::models::error::response_errors_def::ErrorResponseCode;
 
 pub async fn start_chromedriver() -> Result<Child> {
     let path = std::env::var("CHROME_DRIVER_PATH")

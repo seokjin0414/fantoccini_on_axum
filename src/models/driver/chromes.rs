@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::Serialize;
 
 const BINARY_PATH: &str = "CHROME_BINARY_PATH";
 const BINARY_PATH_TEST: &str = "CHROME_BINARY_PATH_TEST";

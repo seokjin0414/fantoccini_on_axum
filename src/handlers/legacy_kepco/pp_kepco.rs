@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use axum::{http::StatusCode, response::IntoResponse, Json};
-use chrono::{Datelike, NaiveDate};
+use chrono::NaiveDate;
 use dashmap::DashMap;
-use fantoccini::{elements::Element, error::CmdError, Client, ClientBuilder, Locator};
+use fantoccini::{elements::Element, Client, ClientBuilder, Locator};
 use serde_json::{json, Map, Value};
 use std::{
     collections::HashSet,
@@ -60,12 +60,11 @@ pub async fn get_pp_all_periods_paid_data_handler(
         }
     })) {
         Ok(result) => result,
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
-            )
-                .into_response()
+            ).into_response()
         }
     };
 
@@ -133,7 +132,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
     .await
     {
         Ok(_) => {}
-        Err(e) => {}
+        Err(_) => {}
     };
 
     // id 입력 로드 대기
@@ -145,7 +144,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
     .await
     {
         Ok(_) => {}
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",
@@ -427,7 +426,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         }
     })) {
         Ok(result) => result,
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
@@ -500,7 +499,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         .await
     {
         Ok(_) => {}
-        Err(e) => {}
+        Err(_) => {}
     };
 
     // id 입력 로드 대기
@@ -512,7 +511,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         .await
     {
         Ok(_) => {}
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",

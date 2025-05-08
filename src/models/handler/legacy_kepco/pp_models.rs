@@ -1,6 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::NaiveDate;
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::Serialize;
 
 // 파워 플레너 요금 데이터
 #[derive(Serialize, Debug)]

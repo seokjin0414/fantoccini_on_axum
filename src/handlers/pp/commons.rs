@@ -10,7 +10,7 @@ pub async fn pp_login(client: &Client, params: PpRequestBody) -> Result<()> {
 
     wait_element(client,  Locator::Id("notice_auto_popup")).await?;
     //공지 팝업 비활성화
-    click_element(client, Locator::XPath("/html/body/div[2]/div[3]/label")).await?;
+    let _ = click_element(client, Locator::XPath("/html/body/div[2]/div[3]/label")).await;
 
     wait_element(client, Locator::Id("RSA_USER_ID")).await?;
     enter_value_in_element(client, Locator::Id("RSA_USER_ID"), &params.userId).await?;

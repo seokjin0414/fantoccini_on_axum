@@ -2,7 +2,6 @@ use anyhow::{Context, Result};
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::{Datelike, NaiveDate};
 use dashmap::DashMap;
-use fantoccini::error::CmdError;
 use fantoccini::{elements::Element, Client, ClientBuilder, Locator};
 use serde_json::{json, Map, Value};
 use std::{
@@ -56,7 +55,7 @@ pub async fn get_3year_kepco_data_of_handler(
         }
     })) {
         Ok(result) => result,
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
@@ -141,7 +140,7 @@ pub async fn get_3year_kepco_data_of_handler(
     .await
     {
         Ok(_) => {}
-        Err(e) => {
+        Err(_) => {
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",

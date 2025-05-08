@@ -31,16 +31,16 @@ pub async fn get_user_info_handler(
 
     let client = create_client(LOCAL_URL, PpRequestBody::test_state(&params))
         .await
-        .map_err(|e| ErrorResponseCode::CREATE_CLIENT)?;
+        .map_err(|_| ErrorResponseCode::CREATE_CLIENT)?;
 
     pp_login(&client, params).await
-        .map_err(|e| ErrorResponseCode::PP_LOGIN)?;
+        .map_err(|_| ErrorResponseCode::PP_LOGIN)?;
 
     let user_info = pp_user_info(&client).await
-        .map_err(|e| ErrorResponseCode::PP_USER_INFO)?;
+        .map_err(|_| ErrorResponseCode::PP_USER_INFO)?;
 
     clean_client(&client).await
-        .map_err(|e| ErrorResponseCode::CLEAN_CLIENT)?;
+        .map_err(|_| ErrorResponseCode::CLEAN_CLIENT)?;
 
     Ok(basic_response(user_info, start.elapsed()))
 }
@@ -103,7 +103,7 @@ fn parse_day(input: &str) -> Result<i16> {
 fn extract_id(input: &str, kind: &str) -> Result<i16> {
     let (set, default) = match kind {
         CONTRACT_TYPE => (contract_vec(), CONTRACT_TYPE_ID),
-        PURPOSE_TYPE => (purpose_vec(), PURPOSE_ID),
+        PURPOSE => (purpose_vec(), PURPOSE_ID),
         _ => {
             return Err(anyhow!("Failed to extract_id: {:?} ({:?}) ", kind, input))
         }

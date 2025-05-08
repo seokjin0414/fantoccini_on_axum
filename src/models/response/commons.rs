@@ -23,14 +23,6 @@ where
     }
 }
 
-pub fn rust_response<D, M>(data: D, meta: M) -> Response
-where
-    D: Serialize,
-    M: Serialize,
-{
-    GenericResponseStruct { data, meta }.into_response()
-}
-
 #[derive(Serialize, Debug)]
 pub struct TimeMeta {
     pub time_taken: String,

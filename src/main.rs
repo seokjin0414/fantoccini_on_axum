@@ -80,9 +80,10 @@ async fn main() -> Result<()> {
         }
     }
 
-    let chromedriver_process = start_chromedriver().await?;
-    // let chromedriver_process = Arc::new(Mutex::new(chromedriver_process));
-
+    let _chromedriver = start_chromedriver().await
+        .map_err(|e| anyhow!("Failed to start chromedriver: {}", e))?;
+    // let chromedriver_process = Arc::new(Mutex::new(chromedriver_process));\
+    
     // 유닛 테스트를 위하여 서버 시작 부분 논리는 분리해놓음
     // Server initialization logic separated for potential future unit testing.
     match server_initializer(start, server_start_time).await {
@@ -98,4 +99,3 @@ async fn main() -> Result<()> {
         }
     }
 }
-

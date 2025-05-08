@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use serde_derive::Serialize;
 
 pub const CONTRACT_TYPE: &str = "contract_type";
