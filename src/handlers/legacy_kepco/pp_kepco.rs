@@ -1,21 +1,21 @@
 use anyhow::{Context, Result};
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use chrono::NaiveDate;
 use dashmap::DashMap;
-use fantoccini::{elements::Element, Client, ClientBuilder, Locator};
-use serde_json::{json, Map, Value};
+use fantoccini::{Client, ClientBuilder, Locator, elements::Element};
+use serde_json::{Map, Value, json};
 use std::{
     collections::HashSet,
     process::{Child, Command},
     sync::Arc,
 };
-use tokio::time::{timeout, Duration};
+use tokio::time::{Duration, timeout};
 
 use crate::models::handler::{
     legacy_kepco::pp_models::{
         MetaResponseData, PpAllPeriodsPaidData, PpAllPeriodsPaidDataResponse,
     },
-    pp::commons::PpRequestBody
+    pp::commons::PpRequestBody,
 };
 
 // 파워 플레너 모든기간 요금 조회 고객번호 기준
@@ -36,7 +36,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
     // driver 실행
     let mut chromedriver_process = match Command::new(chromedriver_path)
         .arg("--port=4445")
-    // .arg(format!("--binary={}", chrome_binary_path))
+        // .arg(format!("--binary={}", chrome_binary_path))
         .spawn()
     {
         Ok(process) => process,
@@ -45,7 +45,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not chromedriver_process!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -64,7 +64,8 @@ pub async fn get_pp_all_periods_paid_data_handler(
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
-            ).into_response()
+            )
+                .into_response();
         }
     };
 
@@ -121,7 +122,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     //공지 팝업 비활성화
@@ -149,7 +150,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",
             )
-                .into_response()
+                .into_response();
         }
     };
     // id 입력
@@ -160,7 +161,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // pw 입력
@@ -171,7 +172,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 로그인 버튼 클릭
@@ -187,7 +188,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -206,7 +207,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -223,7 +224,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // user_num 클릭
@@ -245,7 +246,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -264,7 +265,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -286,7 +287,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed go to monthly_claim_href: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -305,7 +306,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -317,7 +318,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not Parse data_from_table!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -339,7 +340,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed parsing_options_data!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -365,7 +366,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed delete_all_cookies!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     }
 
@@ -377,7 +378,7 @@ pub async fn get_pp_all_periods_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed chromedriver_process.kill!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -411,7 +412,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not chromedriver_process!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -431,7 +432,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -480,7 +481,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         Locator::Id("notice_auto_popup"),
         &mut chromedriver_process,
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -488,7 +489,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     //공지 팝업 비활성화
@@ -496,7 +497,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &client_arc,
         Locator::XPath("/html/body/div[2]/div[3]/label"),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(_) => {}
@@ -508,7 +509,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         Locator::Id("RSA_USER_ID"),
         &mut chromedriver_process,
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(_) => {
@@ -516,7 +517,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",
             )
-                .into_response()
+                .into_response();
         }
     };
     // id 입력
@@ -527,7 +528,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // pw 입력
@@ -538,7 +539,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 로그인 버튼 클릭
@@ -546,7 +547,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &client_arc,
         Locator::XPath("/html/body/div[1]/div[2]/div[1]/form/fieldset/input[1]"),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -554,7 +555,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -565,7 +566,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &mut chromedriver_process,
         Duration::from_secs(20),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -573,7 +574,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -582,7 +583,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &client_arc,
         Locator::XPath("/html/body/div[1]/div[1]/div/div/a[2]"),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -590,7 +591,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // user_num 클릭
@@ -601,10 +602,10 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 "/html/body/div[1]/div[1]/div/div/ul/li[1]/a[text()='{}']",
                 user_number,
             )
-                .as_str(),
+            .as_str(),
         ),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -612,7 +613,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -623,7 +624,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &mut chromedriver_process,
         Duration::from_secs(20),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -631,7 +632,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -640,8 +641,8 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &client_arc,
         Locator::XPath("/html/body/div[1]/div[2]/div[1]/ul[4]/li[5]/a"),
     )
-        .await
-        .unwrap_or_else(|| "".to_string());
+    .await
+    .unwrap_or_else(|| "".to_string());
 
     let claim_url = format!("{}{}", target_url, monthly_claim_href);
 
@@ -653,7 +654,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed go to monthly_claim_href: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -664,7 +665,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
         &mut chromedriver_process,
         Duration::from_secs(20),
     )
-        .await
+    .await
     {
         Ok(_) => {}
         Err(e) => {
@@ -672,7 +673,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_display_none!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -687,7 +688,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not Parse data_from_table!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -706,7 +707,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed delete_all_cookies!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     }
 
@@ -718,7 +719,7 @@ pub async fn get_latest_3_pp_paid_data_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed chromedriver_process.kill!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 

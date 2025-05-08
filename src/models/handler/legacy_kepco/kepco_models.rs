@@ -1,6 +1,6 @@
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use chrono::NaiveDate;
-use serde_derive::{Serialize};
+use serde_derive::Serialize;
 
 // 한전온 요금 데이터
 #[derive(Serialize, Debug)]

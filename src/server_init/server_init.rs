@@ -1,17 +1,13 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use std::str::FromStr;
 use std::{env::var, net::SocketAddr};
 
 use crate::handlers::{
     legacy_kepco::{
         kepco::get_3year_kepco_data_of_handler,
-        pp_kepco::{
-            get_latest_3_pp_paid_data_handler, get_pp_all_periods_paid_data_handler
-        },
+        pp_kepco::{get_latest_3_pp_paid_data_handler, get_pp_all_periods_paid_data_handler},
     },
-    pp::{
-        user_info::get_user_info_handler,
-    }
+    pp::user_info::get_user_info_handler,
 };
 use axum::extract::DefaultBodyLimit;
 use axum::routing::post;
@@ -43,11 +39,19 @@ pub async fn server_initializer(
     // 인증 필요 없는 자료용. x-api-key로 대부분 접근은 걸러져서 민감하지 않은 정보 표출할 때 사용. 또는 테스트용.
     // For insensitive information that only requires x-api-key filtering. Or for testing.
     let insensitives_router: axum::Router = axum::Router::new()
-        .route("/crawling/legacy_kepco/3year", post(get_3year_kepco_data_of_handler))
-        .route("/crawling/pp/paid/all-periods", post(get_pp_all_periods_paid_data_handler))
-        .route("/crawling/pp/paid/latest-3-data", post(get_latest_3_pp_paid_data_handler))
-        .route("/crawling/pp/user-info", post(get_user_info_handler))
-        ;
+        .route(
+            "/crawling/legacy_kepco/3year",
+            post(get_3year_kepco_data_of_handler),
+        )
+        .route(
+            "/crawling/pp/paid/all-periods",
+            post(get_pp_all_periods_paid_data_handler),
+        )
+        .route(
+            "/crawling/pp/paid/latest-3-data",
+            post(get_latest_3_pp_paid_data_handler),
+        )
+        .route("/crawling/pp/user-info", post(get_user_info_handler));
 
     // 최종 라우터.
     // The final router.

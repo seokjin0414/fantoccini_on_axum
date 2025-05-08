@@ -1,19 +1,16 @@
 use anyhow::{Context, Result};
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use chrono::{Datelike, NaiveDate};
 use dashmap::DashMap;
-use fantoccini::{elements::Element, Client, ClientBuilder, Locator};
-use serde_json::{json, Map, Value};
+use fantoccini::{Client, ClientBuilder, Locator, elements::Element};
+use serde_json::{Map, Value, json};
 use std::{
     process::{Child, Command},
     sync::Arc,
 };
-use tokio::time::{timeout, Duration};
+use tokio::time::{Duration, timeout};
 
-use crate::models::handler::{
-    legacy_kepco::kepco_models::KepcoData,
-    pp::commons::PpRequestBody,
-};
+use crate::models::handler::{legacy_kepco::kepco_models::KepcoData, pp::commons::PpRequestBody};
 
 // 한전 3년치 요금 조회 고객번호 기준
 pub async fn get_3year_kepco_data_of_handler(
@@ -40,7 +37,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not chromedriver_process!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -60,7 +57,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Could not acquire connection from pool!",
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -116,7 +113,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // menu button 클릭
@@ -127,7 +124,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -145,7 +142,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Failed to wait_for_element!",
             )
-                .into_response()
+                .into_response();
         }
     };
     // login form 클릭
@@ -156,7 +153,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -174,7 +171,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // id 입력
@@ -191,7 +188,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // pw 입력
@@ -208,7 +205,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 로그인 버튼 클릭
@@ -224,7 +221,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -242,7 +239,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -260,7 +257,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -279,7 +276,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_hidden!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -297,7 +294,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to enter_value_in_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 검색 버튼 클릭
@@ -308,7 +305,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -326,7 +323,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 스크롤 강제 맨 아래
@@ -340,7 +337,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to scrollHeight!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     // 상세 요금 버튼 클릭
@@ -356,7 +353,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -370,7 +367,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to click_element_with_retries!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -389,7 +386,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_hidden!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -401,7 +398,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not get_children_ids_to_map!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -413,7 +410,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Could not parse_data_from_parent_ids!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
     data_vec.sort_by(|a, b| b.claim_date.cmp(&a.claim_date));
@@ -431,7 +428,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to navigate back!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -449,7 +446,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -468,7 +465,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed to wait_for_element_hidden!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -482,7 +479,7 @@ pub async fn get_3year_kepco_data_of_handler(
                     StatusCode::INTERNAL_SERVER_ERROR,
                     format!("Failed to find option index!: {:?}", e),
                 )
-                    .into_response()
+                    .into_response();
             }
         };
 
@@ -504,7 +501,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed parsing_options_data!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 
@@ -522,7 +519,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed delete_all_cookies!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     }
 
@@ -534,7 +531,7 @@ pub async fn get_3year_kepco_data_of_handler(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Failed chromedriver_process.kill!: {:?}", e),
             )
-                .into_response()
+                .into_response();
         }
     };
 

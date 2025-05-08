@@ -17,4 +17,3 @@ impl PpRequestBody {
         self.testMode.unwrap_or(false)
     }
 }
-

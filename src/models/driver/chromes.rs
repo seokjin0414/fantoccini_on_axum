@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use serde_derive::Serialize;
 
 const BINARY_PATH: &str = "CHROME_BINARY_PATH";
@@ -46,10 +46,12 @@ impl ChromeOptions {
 
     pub fn new(test: bool) -> Result<Self> {
         let mut key = BINARY_PATH_TEST;
-        if test { key = BINARY_PATH }
+        if test {
+            key = BINARY_PATH
+        }
 
-        let binary_path = std::env::var(key)
-            .map_err(|e| anyhow!("Failed to get ENV BINARY_PATH: {}", e))?;
+        let binary_path =
+            std::env::var(key).map_err(|e| anyhow!("Failed to get ENV BINARY_PATH: {}", e))?;
 
         Ok(Self::with_binary(binary_path))
     }

@@ -48,4 +48,3 @@ pub struct UserInfo {
     pub inspection_day: i16,
     pub instrument_number: String,
 }
-
