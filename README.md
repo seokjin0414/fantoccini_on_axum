@@ -53,6 +53,8 @@ pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
 - 환경 변수(.env)는 필요에 따라 자유롭게 수정할 수 있습니다.
 - 프로젝트에서 사용하는 라이브러리/의존성 정보는 Cargo.toml 파일을 참고하세요.
 
+---
+
 ## 문의
 
 질문이 있거나, 추가 지원이 필요하시거나, 협업을 원하신다면 아래로 연락해 주세요.
