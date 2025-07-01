@@ -27,7 +27,7 @@ axum = { version = "0.8.4", default-features = false, features = [
     "ws",
     "multipart",
 ] } #is the web framework
-tokio = { version = "1.45.0", default-features = false, features = [
+tokio = { version = "1.45.1", default-features = false, features = [
     "macros",
     "rt-multi-thread",
     "process",
@@ -52,7 +52,7 @@ dotenvy = "0.15.7"
 anyhow = "1.0.98"
 
 #crawling
-fantoccini = "0.21.5"
+fantoccini = "0.22.0"
 
 #regex
 regex = "1.11.1"

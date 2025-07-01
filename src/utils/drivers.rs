@@ -102,6 +102,16 @@ pub async fn click_element(client: &Client, locator: Locator<'_>) -> Result<()> 
     Ok(())
 }
 
+pub async fn script_execute(client: &Client, script: &str) -> Result<()> {
+    client.execute(script, vec![]).await
+        .map_err(|e| {
+            eprintln!("Failed to execute the script: {:?}\n {:?}", script, e);
+            anyhow!("Failed to execute the script: {:?}\n {:?}", script, e)
+        })?;
+    
+    Ok(())
+}
+
 pub async fn enter_value_in_element(
     client: &Client,
     locator: Locator<'_>,

@@ -28,25 +28,16 @@ pub async fn pp_login(client: &Client, params: PpRequestBody) -> Result<()> {
     )
     .await?;
 
-    // user_num selector 클릭
-    click_element(
-        client,
-        Locator::XPath("/html/body/div[1]/div[1]/div/div/a[2]"),
-    )
-    .await?;
+    let user_num_css = format!("ul > li > a[href='#{}']", params.userNum);
+    let selector_json = serde_json::to_string(&user_num_css).unwrap_or_default();
+    let script = format!(
+        "var a = document.querySelector({}); if (a) {{ a.click(); }}",
+        selector_json
+    );
+    
     // user_num 클릭
-    click_element(
-        client,
-        Locator::XPath(
-            format!(
-                "/html/body/div[1]/div[1]/div/div/ul/li[1]/a[text()='{}']",
-                params.userNum,
-            )
-            .as_str(),
-        ),
-    )
-    .await?;
-
+    script_execute(client, &script).await?;
+    
     wait_for_element_display_none(
         client,
         Locator::Id("backgroundLayer"),
