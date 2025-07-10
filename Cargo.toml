@@ -1,6 +1,6 @@
 [package]
 name = "crawling_on_axum"
-version = "0.0.40"
+version = "0.0.41"
 edition = "2024"
 
 [profile.release]
@@ -27,7 +27,7 @@ axum = { version = "0.8.4", default-features = false, features = [
     "ws",
     "multipart",
 ] } #is the web framework
-tokio = { version = "1.45.1", default-features = false, features = [
+tokio = { version = "1.46.1", default-features = false, features = [
     "macros",
     "rt-multi-thread",
     "process",
