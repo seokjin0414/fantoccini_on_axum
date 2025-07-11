@@ -4,7 +4,7 @@ use crate::{
         driver::chromes::LOCAL_URL,
         error::response_errors_def::ErrorResponseCode,
         handler::pp::{
-            commons::{PpRequestBody, USER_INFO_URL},
+            commons::{PpRequestBody, USER_INFO_URL, USER_SELECT_CHARGE_URL},
             user_info::{
                 CONTRACT_TYPE, CONTRACT_TYPE_ID, PURPOSE, PURPOSE_ID, UserInfo, contract_vec,
                 purpose_vec,
@@ -43,7 +43,7 @@ pub async fn get_user_info_handler(
     Ok(basic_response(user_info, start.elapsed()))
 }
 
-async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
+async fn pp_user_info(client: &Client) -> Result<UserInfo> {
     go_to_url(client, USER_INFO_URL).await?;
     wait_element(&client, Locator::Css("#table2")).await?;
 
@@ -94,6 +94,26 @@ async fn pp_user_info(client: &Client) -> anyhow::Result<UserInfo> {
         inspection_day: parse_day(&inspection_day)?,
         instrument_number,
     })
+}
+
+async fn pp_user_select_charge_info(client: &Client, contract: &str) -> Result<i16> {
+    go_to_url(client, USER_SELECT_CHARGE_URL).await?;
+    wait_element(&client, Locator::Id("txt")).await?;
+
+    let pricing_plan = text_element(&client, Locator::Id("spanCNTR_KND_NM")).await?;
+
+    let re = Regex::new(r"선택(\d+)")?;
+    let word = match re.captures(&pricing_plan) {
+        Some(caps) => &caps[0].to_string(),
+        None => ""
+    };
+
+    let param = format!("{}{}", contract, word);
+
+    
+
+    println!("pp_user_select_charge_info successfully");
+    Ok(0)
 }
 
 fn parse_day(input: &str) -> Result<i16> {
