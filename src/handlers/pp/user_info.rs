@@ -1,3 +1,4 @@
+use std::time::Duration;
 use crate::{
     handlers::pp::commons::pp_login,
     models::{
@@ -89,7 +90,7 @@ async fn pp_user_info(client: &Client) -> Result<UserInfo> {
     Ok(UserInfo {
         user_number,
         contract_type_id: extract_id(&contract, CONTRACT_TYPE)?,
-        purpose_id: extract_id(&contract, PURPOSE)?,
+        purpose_id: pp_user_select_charge_info(&client, &contract).await?,
         contract_power: parse_day(&contract_power)? as f64,
         inspection_day: parse_day(&inspection_day)?,
         instrument_number,
@@ -98,22 +99,27 @@ async fn pp_user_info(client: &Client) -> Result<UserInfo> {
 
 async fn pp_user_select_charge_info(client: &Client, contract: &str) -> Result<i16> {
     go_to_url(client, USER_SELECT_CHARGE_URL).await?;
-    wait_element(&client, Locator::Id("txt")).await?;
+
+    wait_for_element_display_none(
+        client,
+        Locator::Id("backgroundLayer"),
+        Duration::from_secs(15),
+    )
+        .await?;
 
     let pricing_plan = text_element(&client, Locator::Id("spanCNTR_KND_NM")).await?;
+    println!("pricing_plan: {}", pricing_plan);
+    println!("contract: {}", contract);
 
-    let re = Regex::new(r"선택(\d+)")?;
-    let word = match re.captures(&pricing_plan) {
-        Some(caps) => &caps[0].to_string(),
-        None => ""
-    };
+    let re = Regex::new(r"(고압.|저압.)")?;
+    let target = re.replace_all(contract, "").to_string();
+    println!("target: {}", target);
 
-    let param = format!("{}{}", contract, word);
-
-    
+    let result = pricing_plan.replace(&target, "").replace(" ", "");
+    println!("result: {}", result);
 
     println!("pp_user_select_charge_info successfully");
-    Ok(0)
+    Ok(extract_id(&result, PURPOSE)?)
 }
 
 fn parse_day(input: &str) -> Result<i16> {
@@ -138,7 +144,7 @@ fn extract_id(input: &str, kind: &str) -> Result<i16> {
     };
 
     for (pattern, id) in set {
-        if input.contains(pattern) {
+        if input == pattern {
             return Ok(id);
         }
     }
