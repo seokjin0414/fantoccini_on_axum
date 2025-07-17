@@ -1,5 +1,6 @@
 use anyhow::{Result, anyhow};
 use serde_derive::Serialize;
+use tempfile::TempDir;
 
 const BINARY_PATH: &str = "CHROME_BINARY_PATH";
 const BINARY_PATH_TEST: &str = "CHROME_BINARY_PATH_TEST";
@@ -44,15 +45,27 @@ impl ChromeOptions {
         }
     }
 
-    pub fn new(test: bool) -> Result<Self> {
+    fn with_binary_and_user_data_dir(binary: String, user_data_dir: String) -> Self {
+        let mut args: Vec<String> = COMMON_ARGS.iter().map(|&s| s.to_string()).collect();
+        args.push(format!("--user-data-dir={}", user_data_dir));
+        ChromeOptions { binary, args }
+    }
+
+
+    pub fn new(test: bool) -> Result<(Self, TempDir)> {
         let mut key = BINARY_PATH_TEST;
-        if test {
-            key = BINARY_PATH
-        }
+        if test { key = BINARY_PATH }
 
-        let binary_path =
-            std::env::var(key).map_err(|e| anyhow!("Failed to get ENV BINARY_PATH: {}", e))?;
+        let binary_path = std::env::var(key)
+            .map_err(|e| anyhow!("Failed to get ENV BINARY_PATH: {}", e))?;
 
-        Ok(Self::with_binary(binary_path))
+        let tmp_dir = tempfile::tempdir()
+            .map_err(|e| anyhow!("Failed to create temporary directory: {}", e))?;
+
+        let user_data_dir = tmp_dir.path().to_str().unwrap().to_string();
+
+        let opts = Self::with_binary_and_user_data_dir(binary_path, user_data_dir);
+
+        Ok((opts, tmp_dir))
     }
 }

@@ -5,6 +5,7 @@ use fantoccini::wd::Capabilities;
 use fantoccini::{Client, ClientBuilder, Locator};
 use std::sync::Arc;
 use std::time::Duration;
+use tempfile::TempDir;
 use tokio::process::{Child, Command};
 use tokio::sync::Mutex;
 use tokio::time::timeout;
@@ -40,20 +41,25 @@ pub async fn shutdown_chromedriver(chromedriver_process: Arc<Mutex<Child>>) {
     }
 }
 
-pub fn create_capabilities(test: bool) -> Result<Capabilities> {
+pub fn create_capabilities(test: bool) -> Result<(Capabilities, TempDir)> {
     let mut capabilities = Capabilities::new();
-    let chrome_options = serde_json::to_value(ChromeOptions::new(test)?).map_err(|e| {
-        eprintln!("Failed to connect process: {:?}", e);
-        anyhow!("Failed to serialize ChromeOptions: {:?}", e)
-    })?;
+    let (chrome_options, tmp_dir) = ChromeOptions::new(test)?;
 
-    capabilities.insert("goog:chromeOptions".to_string(), chrome_options);
-    Ok(capabilities)
+    let chrome_option_json = serde_json::to_value(chrome_options)
+        .map_err(|e| {
+            eprintln!("Failed to connect process: {:?}", e);
+            anyhow!("Failed to serialize ChromeOptions: {:?}", e)
+        })?;
+
+    capabilities.insert("goog:chromeOptions".to_string(), chrome_option_json);
+    Ok((capabilities, tmp_dir))
 }
 
-pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
+pub async fn create_client(url: &str, test: bool) -> Result<(Arc<Client>, TempDir)> {
+    let (caps, tmp_dir) = create_capabilities(test)?;
+
     let client = ClientBuilder::native()
-        .capabilities(create_capabilities(test)?)
+        .capabilities(caps)
         .connect(url)
         .await
         .map_err(|e| {
@@ -61,7 +67,7 @@ pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
             anyhow!("Failed to connect process: {:?}", e)
         })?;
 
-    Ok(Arc::new(client))
+    Ok((Arc::new(client), tmp_dir))
 }
 
 pub async fn go_to_url(client: &Client, url: &str) -> Result<()> {
