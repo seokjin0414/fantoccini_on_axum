@@ -25,7 +25,7 @@ pub async fn get_user_info_handler(
 ) -> Result<impl IntoResponse, ErrorResponseCode> {
     let start = std::time::Instant::now();
 
-    let (client, _tmpdir) = create_client(LOCAL_URL, PpRequestBody::test_state(&params))
+    let client = create_client(LOCAL_URL, PpRequestBody::test_state(&params))
         .await
         .map_err(|_| ErrorResponseCode::CREATE_CLIENT)?;
 
