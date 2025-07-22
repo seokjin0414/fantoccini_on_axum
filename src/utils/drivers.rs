@@ -42,18 +42,23 @@ pub async fn shutdown_chromedriver(chromedriver_process: Arc<Mutex<Child>>) {
 
 pub fn create_capabilities(test: bool) -> Result<Capabilities> {
     let mut capabilities = Capabilities::new();
-    let chrome_options = serde_json::to_value(ChromeOptions::new(test)?).map_err(|e| {
-        eprintln!("Failed to connect process: {:?}", e);
-        anyhow!("Failed to serialize ChromeOptions: {:?}", e)
-    })?;
+    let chrome_options = ChromeOptions::new(test)?;
 
-    capabilities.insert("goog:chromeOptions".to_string(), chrome_options);
+    let chrome_option_json = serde_json::to_value(chrome_options)
+        .map_err(|e| {
+            eprintln!("Failed to connect process: {:?}", e);
+            anyhow!("Failed to serialize ChromeOptions: {:?}", e)
+        })?;
+
+    capabilities.insert("goog:chromeOptions".to_string(), chrome_option_json);
     Ok(capabilities)
 }
 
 pub async fn create_client(url: &str, test: bool) -> Result<Arc<Client>> {
+    let caps = create_capabilities(test)?;
+
     let client = ClientBuilder::native()
-        .capabilities(create_capabilities(test)?)
+        .capabilities(caps)
         .connect(url)
         .await
         .map_err(|e| {
